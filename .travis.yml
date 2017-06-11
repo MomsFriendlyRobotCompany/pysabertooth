@@ -1,0 +1,15 @@
+language: python
+
+# using container based testing is faster, but you can't use sudo
+sudo: false
+# dist: trusty
+# dist: precise
+
+python:
+    - "2.7"
+    - "3.6"
+
+install:
+    - pip install -U pip setuptools wheel
+    - pip install -U pyserial build_utils
+    - pip install .
