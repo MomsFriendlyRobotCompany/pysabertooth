@@ -16,7 +16,8 @@ from __future__ import division
 import serial
 import logging
 
-class Sabertooth():
+
+class Sabertooth(object):
     """
         Sabertooth: A class to control a Sabertooth 2x60 using the packetized
                     serial mode (DIP switches 1,2 low).
