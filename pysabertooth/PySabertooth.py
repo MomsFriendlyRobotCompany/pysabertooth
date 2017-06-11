@@ -13,7 +13,8 @@
 ##
 
 from __future__ import division
-import serial, logging
+import serial
+import logging
 
 class Sabertooth():
     """
