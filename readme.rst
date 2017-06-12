@@ -16,6 +16,13 @@ Install
 Usage
 --------
 
+.. code-block:: python
+
+	from pysabertooth import Sabertooth
+	
+	saber = Sabertooth()
+
+
 MIT License
 -------------
 
