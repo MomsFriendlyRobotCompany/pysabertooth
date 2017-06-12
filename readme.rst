@@ -1,4 +1,4 @@
-.. figure:: docs/pics/Sabertooth2x32Big.jpg
+.. figure:: https://raw.githubusercontent.com/MomsFriendlyRobotCompany/pysabertooth/master/docs/pics/Sabertooth2x32Big.jpg
 	:target: https://www.dimensionengineering.com/products/sabertooth2x32
 
 
@@ -19,7 +19,7 @@ Usage
 .. code-block:: python
 
 	from pysabertooth import Sabertooth
-	
+
 	saber = Sabertooth()
 
 

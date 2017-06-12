@@ -1,5 +1,5 @@
 
-from PySabertooth import Sabertooth
+from .PySabertooth import Sabertooth
 
 from .version import __version__
 
