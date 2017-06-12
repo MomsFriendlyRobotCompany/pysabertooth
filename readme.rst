@@ -1,5 +1,5 @@
 .. figure:: docs/pics/Sabertooth2x32Big.jpg
-	:target: https://google.com
+	:target: https://www.dimensionengineering.com/products/sabertooth2x32
 
 
 PySabertooth
