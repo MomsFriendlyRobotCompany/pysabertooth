@@ -1,19 +1,9 @@
 ##
 # Sabertooth.py: Class implementing packetized serial control of
-#                Sabertooth 2x60 motor driver (Dimension Engineering).
+#                Sabertooth 2x32 motor driver (Dimension Engineering).
 #
+# This code was adapted from MIT licensed
 # Copyright 2015, Egan McComb
-#
-# This code was adapted from MIT licensed:
-#
-# > Sabertooth.py
-# > Copyright 2014, Troy Dack
-# > <https://github.com/tdack/BBB-Bot>.
-#
-##
-#
-# Additional changes and update
-#
 # copywrite 2017 Kevin J. Walchko
 #
 ##
@@ -31,20 +21,6 @@ class Sabertooth(object):
 
 	https://www.dimensionengineering.com/datasheets/Sabertooth2x60.pdf
 	"""
-	# Commands to implement. See pages 20-23 of the documentation for
-	# additional commands available.
-	# cmds = {
-	# 	"fwd_left": 0x00,
-	# 	"rev_left": 0x01,
-	# 	"fwd_right": 0x04,
-	# 	"rev_right": 0x05,
-	# 	"fwd_mixed": 0x08,
-	# 	"rev_mixed": 0x09,
-	# 	"right_mixed": 0x0A,
-	# 	"left_mixed": 0x0B,
-	# 	"ramp": 0x10
-	# }
-
 	FORWARD_1 = 0x00
 	REVERSE_1 = 0x01
 	FORWARD_2 = 0x04
@@ -54,24 +30,16 @@ class Sabertooth(object):
 	RIGHT_MIXED = 0x0A
 	LEFT_MIXED = 0x0B
 	RAMP = 0x10
-	# "fwd_mixed": 0x08,
-	# "rev_mixed": 0x09,
-	# "right_mixed": 0x0A,
-	# "left_mixed": 0x0B,
-	# "ramp": 0x10
 
 	def __init__(self, port, baudrate=9600, address=128, timeout=0.1):
 		"""
-		port:        Teletypewriter device to connect to.
-		address:     Address of controller to send commands to
-					 (set by DIP switches 3-6).
-
+		baudrate - 2400, 9600, 19200, 38400, 115200
+		address - motor controller address
+		timeout - serial read time out
 		"""
 		self.port = port
 		self.address = address
 
-		# if (self.port is None) or (self.address < 128 or self.address > 135):
-		# 	return None
 		if 128 > self.address > 135:
 			raise Exception('PySabertooth, invalid address: {}'.format(address))
 
@@ -89,6 +57,18 @@ class Sabertooth(object):
 		self.open()
 		self.setBaudrate(baudrate)
 
+	def __del__(self):
+		"""
+		Destructor, stops motors and closes serial port
+		"""
+		self.stop()
+		self.close()
+		return
+	
+	def info(self):
+		"""
+		Prints out connection info
+		"""
 		print('')
 		print('='*40)
 		print('Sabertooth Motor Controller')
@@ -98,15 +78,16 @@ class Sabertooth(object):
 		print('-'*40)
 		print('')
 
-	def __del__(self):
-		self.stop()
-		self.close()
-		return
-
 	def close(self):
+		"""
+		Closes serial port
+		"""
 		self.saber.close()
 
 	def setBaudrate(self, baudrate):
+		"""
+		Sets the baudrate to: 2400, 9600, 19200, 38400, 115200
+		"""
 		valid = {
 			2400:   1,
 			9600:   2,
@@ -114,8 +95,7 @@ class Sabertooth(object):
 			38400:  4,
 			115200: 5
 		}
-		# if baudrate in [9600, 19200, 38400, 115200]:
-		# 	pass
+		
 		if baudrate in valid:
 			baud = valid[baudrate]
 		else:
@@ -128,6 +108,9 @@ class Sabertooth(object):
 		time.sleep(0.2)
 
 	def open(self):
+		"""
+		Opens serial port
+		"""
 		if not self.saber.is_open:
 			self.saber.open()
 		self.saber.write(b'\xaa')
@@ -137,19 +120,18 @@ class Sabertooth(object):
 	def sendCommand(self, command, message):
 		"""
 		sendCommand: Sends a packetized serial command to the Sabertooth
-					 controller, returning bytes written.
 
-			command: Command to send. Valid commands (as strings) are:
-				fwd_left
-				rev_left
-				fwd_right
-				rev_right
-				fwd_mixed
-				rev_mixed
-				right_mixed
-				left_mixed
-				ramp
-			message: Command content, usually speed 0-100%.
+			command: Command to send. 
+				FORWARD_1 = 0x00
+				REVERSE_1 = 0x01
+				FORWARD_2 = 0x04
+				REVERSE_2 = 0x05
+				FORWARD_MIXED = 0x08
+				REVERSE_MIXED = 0x09
+				RIGHT_MIXED = 0x0A
+				LEFT_MIXED = 0x0B
+				RAMP = 0x10
+			message: Command
 
 		"""
 		# Calculate checksum termination (page 23 of the documentation).
@@ -157,78 +139,17 @@ class Sabertooth(object):
 		# Write data packet.
 		msg = [self.address, command, message, checksum]
 		msg = bytes(bytearray(msg))
-		# sentBytes = self.saber.write("".join(chr(i) for i in [self.address, command, message, checksum]))
 		self.saber.write(msg)
 		# Flush UART.
 		self.saber.flush()
-		# return sentBytes
-
-#	def mixedDrive(self, dir_surge="fwd", speed_surge=0, dir_yaw="left", speed_yaw=0):
-#		"""
-#		mixedDrive: Mixed drive (additive differential drive).
-#					Calls sendCommand, returning bytes written.
-#
-#			dir_surge:   fwd or rev
-#			speed_surge: 0-100% (surge)
-#			dir_yaw:     left or right (additive)
-#			speed_yaw:   0-100% (yaw)
-#		"""
-#		# Stupidity checks.
-#		validcmds = ["fwd", "rev"]
-#		if (dir_surge not in validcmds):
-#			return -1
-#
-#		validcmds = ["left", "right"]
-#		if (dir_yaw not in validcmds):
-#			return -1
-#
-#		if speed_surge < 0:
-#			speed_surge = 0
-#		elif speed_surge > 100:
-#			speed_surge = 100
-#
-#		if speed_yaw < 0:
-#			speed_yaw = 0
-#		elif speed_yaw > 100:
-#			speed_yaw = 100
-#
-#		# Calculate speed command from percentage.
-#		speed_surge = int(speed_surge*127/100)
-#		speed_yaw = int(speed_yaw*127/100)
-#
-#		logging.debug("mixedDrive: %s %d %s %d".format(dir_surge + "_mixed", speed_surge, dir_yaw + "_mixed", speed_yaw))
-#
-#		# sentBytes = self.sendCommand(self.cmds[dir_surge + "_mixed"], speed_surge)
-#		# sentBytes += self.sendCommand(self.cmds[dir_yaw + "_mixed"], speed_yaw)
-#		# return sentBytes
 
 	def stop(self):
 		"""
-			stop: Stops both motors using independentDrive, returning bytes written.
-
+		Stops both motors
 		"""
 		sentBytes = 0
-		#sentBytes = self.independentDrive("fwd", 0, "fwd", 0)
 		self.driveBoth(0,0)
 		return sentBytes
-
-	# def setRamp(self, value):
-	# 	"""
-	# 	setRamp: Set acceleration ramp for controller.
-	#
-	# 		value: Ramp value to use (see documentation):
-	# 			01-10: Fast Ramp
-	# 			11-20: Slow Ramp
-	# 			21-80: Intermediate Ramp
-	#
-	# 	"""
-	# 	sentBytes = 0
-	# 	if (value > 0 and value < 81):
-	# 		sentBytes = self.sendCommand(self.cmds["ramp"], value)
-	# 	else:
-	# 		return -1
-	#
-	# 	return sentBytes
 
 	def drive(self, num, speed):
 		"""Drive 1 or 2 motor"""
