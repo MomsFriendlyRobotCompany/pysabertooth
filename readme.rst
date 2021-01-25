@@ -6,6 +6,16 @@ PySabertooth
 ==============
 
 
+.. image:: https://img.shields.io/pypi/l/pysabertooth.svg
+	:target: https://github.com/MomsFriendlyRobotCompany/pysabertooth
+.. image:: https://img.shields.io/pypi/pyversions/pysabertooth.svg
+	:target: https://github.com/MomsFriendlyRobotCompany/pysabertooth
+.. image:: https://img.shields.io/pypi/wheel/pysabertooth.svg
+	:target: https://github.com/MomsFriendlyRobotCompany/pysabertooth
+.. image:: https://img.shields.io/pypi/v/pysabertooth.svg
+	:target: https://github.com/MomsFriendlyRobotCompany/pysabertooth
+
+
 Install
 ----------
 
@@ -21,7 +31,7 @@ Usage
 	from pysabertooth import Sabertooth
 
 	saber = Sabertooth('/dev/tty.usbserial', baudrate=115200, address=128, timeout=0.1)
-	
+
 	# drive(number, speed)
 	# number: 1-2
 	# speed: -100 - 100
